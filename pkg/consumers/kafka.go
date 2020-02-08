@@ -19,11 +19,11 @@ type KafkaConsumer struct {
 	Topics []string
 
 	WaitGroup sync.WaitGroup
-	Close     chan os.Signal
+	CloseSignal     chan os.Signal
 }
 
 func (kc *KafkaConsumer) Stop() {
-	close(kc.Close)
+	close(kc.CloseSignal)
 	kc.WaitGroup.Wait()
 }
 
@@ -52,7 +52,7 @@ func (kc *KafkaConsumer) Listen(messages chan ConsumerMessage) error {
 		}
 
 		select {
-		case <-kc.Close:
+		case <-kc.CloseSignal:
 			log.Println("Disconnecting...")
 			break
 		default:
